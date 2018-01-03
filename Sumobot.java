@@ -24,18 +24,23 @@ public class Sumobot implements FeatureListener, SensorPortListener
     private State state;
     private boolean avoidEdge;
 
+    /*
+     * Constructor
+     */
     public Sumobot()
     {
         state = State.SEARCHING;
         avoidEdge = false;
 
+        // Make sure that the motors match up
         pilot = new DifferentialPilot(56.0 /* wheel diameter in mm */, 160.0 /* wheel base in mm */,
-            Motor.B, Motor.C);
+            Motor.A, Motor.C);
 
-        leftBumper = new TouchSensor(SensorPort.S2);
+        // Make sure that all of these ports match up
+        leftBumper = new TouchSensor(SensorPort.S1);
         rightBumper = new TouchSensor(SensorPort.S4);
         sonicSensor = new UltrasonicSensor (SensorPort.S3);
-        lightSensor = new LightSensor(SensorPort.S1);
+        lightSensor = new LightSensor(SensorPort.S2);
 
         rangeDetector = new RangeFeatureDetector(sonicSensor, 80 /* max distance in mm */,
             500 /* polling interval in ms */);
@@ -50,9 +55,13 @@ public class Sumobot implements FeatureListener, SensorPortListener
         rightBumpDetector.enableDetection(false);
         rightBumpDetector.addListener(this);
 
-        SensorPort.S1.addSensorPortListener(this);
+        SensorPort.S2.addSensorPortListener(this);
     }
 
+    /*
+     * The calibrate method is for the robot to figure out what white and black mean in 
+     * the lighting of its environment
+     */
     public void calibrate()
     {
         System.out.println("Place light sensor on white and press enter");
@@ -66,6 +75,10 @@ public class Sumobot implements FeatureListener, SensorPortListener
         lightSensor.calibrateLow();
     }
 
+    /*
+     * Here is where the action happens and where the switch statement for changing
+     * between states usually is.
+     */
     public void go()
     {
         state = State.SEARCHING;
@@ -100,7 +113,6 @@ public class Sumobot implements FeatureListener, SensorPortListener
                     System.out.println("Found...");
                     pilot.rotate(-8.0, false);
                     state = State.SEEKING;
-
                 }
                 break;
 
@@ -114,7 +126,6 @@ public class Sumobot implements FeatureListener, SensorPortListener
 
                 case PUSHING:
                 {
-
                     pilot.setTravelSpeed(pilot.getMaxTravelSpeed() / 2);
 
                     if(leftBumper.isPressed() || rightBumper.isPressed())
@@ -129,11 +140,13 @@ public class Sumobot implements FeatureListener, SensorPortListener
                 }
                 break;
             }
-
         }
         while(Button.ENTER.isUp());
     }
-
+    
+    /*
+     * featureDetected must be implemented because it is a method in the FeatureListener class
+     */
     public void featureDetected(Feature feature, FeatureDetector detector)
     {
         if(detector == rangeDetector)
@@ -153,6 +166,9 @@ public class Sumobot implements FeatureListener, SensorPortListener
 
     }
 
+    /*
+     * stateChanged must be implemented because it is a method in the SensorPortListener class
+     */
     public void stateChanged(SensorPort sensor, int oldValue, int newValue) 
     {
         if( lightSensor.getLightValue() < 30)
