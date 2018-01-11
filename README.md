@@ -11,7 +11,7 @@ states, interfaces, implementation, classes, splitting work among methods, switc
 - The robot's goal is to find and then push an object while staying within the boundaries of an obstacle course. 
 
 ### What are states?
-A state is just a type of situation that the robot can be in and that the programmer would find useful to differentiate from other types of situations. In this application choosing states is pretty straight-forward, but the more complicated a problem becomes, the more important it is to choose the right states. For the robot, you can model its journey as consisting of, for example, four states: SEARCHING, SEEKING, and PUSHING.
+A state is just a type of situation that the robot can be in and that the programmer would find useful to differentiate from other types of situations. In this application choosing states is pretty straight-forward, but the more complicated a problem becomes, the more important it is to choose the right states. For the robot, you can model its journey as consisting of, for example, three states: SEARCHING, SEEKING, and PUSHING.
 
 ### Some characteristics of a set of states:
 - states should be mutually exclusive (i.e. it is impossible to be in state X and state Y at the same time)
